@@ -1,6 +1,6 @@
 FROM alpine as builder
 
-LABEL maintainer="varnediiii@gmail.com"
+LABEL maintainer="nediiii <varnediiii@gmail.com>"
 
 # speed up apk while you are in mainland china
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories

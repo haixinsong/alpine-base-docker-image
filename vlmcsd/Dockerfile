@@ -11,7 +11,7 @@ RUN tar -zxvf binaries.tar.gz
 # main image
 FROM nediiii/alpine
 
-LABEL maintainer="varnediiii@gmail.com"
+LABEL maintainer="nediiii <varnediiii@gmail.com>"
 
 # copy the application
 COPY --from=builder /binaries/Linux/intel/static/vlmcsd-x64-musl-static .

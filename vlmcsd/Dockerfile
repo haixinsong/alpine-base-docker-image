@@ -1,8 +1,6 @@
 # pre builder
 FROM nediiii/alpine as builder
 
-LABEL maintainer="varnediiii@gmail.com"
-
 RUN apk add --no-cache curl
 
 # download latest vlmcsd releases

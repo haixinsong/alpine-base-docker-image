@@ -2,14 +2,13 @@ FROM nediiii/alpine
 
 LABEL maintainer="nediiii <varnediiii@gmail.com>"
 
-ENV MODE            server
-ENV SERVER_ADDR     0.0.0.0
-ENV SERVER_PORT     8388
-ENV PASSWORD=
-ENV METHOD          aes-256-gcm
-ENV TIMEOUT         300
-ENV DNS_ADDRS       8.8.8.8,8.8.4.4
-ENV ARGS=
+ENV SERVER_ADDR=0.0.0.0 \
+     SERVER_PORT=8388 \
+     PASSWORD= \
+     METHOD=aes-256-gcm \
+     TIMEOUT=300 \
+     DNS_ADDRS=8.8.8.8,8.8.4.4 \
+     ARGS=
 
 RUN set -ex \
      && mkdir /tmp/repo \
@@ -40,7 +39,7 @@ RUN set -ex \
      | sort -u) \
      && rm -rf /tmp/repo
 
-CMD exec ss-$MODE \
+CMD exec ss-server \
      -s $SERVER_ADDR \
      -p $SERVER_PORT \
      -k ${PASSWORD:-$(hostname)} \
@@ -48,4 +47,7 @@ CMD exec ss-$MODE \
      -t $TIMEOUT \
      -d $DNS_ADDRS \
      -u \
+     --fast-open \
      $ARGS
+
+# docker build . -t nediiii/shadowsocks-libev

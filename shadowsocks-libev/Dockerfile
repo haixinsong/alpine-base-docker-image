@@ -3,51 +3,30 @@ FROM nediiii/alpine
 LABEL maintainer="nediiii <varnediiii@gmail.com>"
 
 ENV SERVER_ADDR=0.0.0.0 \
-     SERVER_PORT=8388 \
-     PASSWORD= \
-     METHOD=aes-256-gcm \
-     TIMEOUT=300 \
-     DNS_ADDRS=8.8.8.8,8.8.4.4 \
-     ARGS=
+    SERVER_PORT=8388 \
+    PASSWORD= \
+    METHOD=aes-256-gcm \
+    TIMEOUT=300 \
+    DNS_ADDRS=8.8.8.8,8.8.4.4 \
+    ARGS=
 
-RUN set -ex \
-     && mkdir /tmp/repo \
-     && cd /tmp/repo \
-     # Build environment setup
-     && apk add --no-cache --virtual .build-deps \
-     build-base \
-     c-ares-dev \
-     libev-dev \
-     libsodium-dev \
-     linux-headers \
-     mbedtls-dev \
-     pcre-dev \
-     curl \
-     # Get the latest releases
-     && wget $(curl -s https://api.github.com/repos/shadowsocks/shadowsocks-libev/releases/latest | grep browser_download_url | cut -d '"' -f 4) \
-     && tar -zxvf shadowsocks-libev* \
-     && cd shadowsocks-libev* \
-     # Build & install
-     && ./configure --prefix=/usr --disable-documentation \
-     && make install \
-     && apk del .build-deps \
-     # Runtime dependencies setup
-     && apk add --no-cache \
-     rng-tools \
-     $(scanelf --needed --nobanner /usr/bin/ss-* \
-     | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-     | sort -u) \
-     && rm -rf /tmp/repo
+# RUN echo "@edge https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/main">> /etc/apk/repositories
+# RUN echo "@edgecommunity https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/community">> /etc/apk/repositories
+
+# RUN echo "@testing https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing" >> /etc/apk/repositories && \
+# apk add --no-cache shadowsocks-libev@testing
+
+RUN apk add --no-cache -X https://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing shadowsocks-libev
 
 CMD exec ss-server \
-     -s $SERVER_ADDR \
-     -p $SERVER_PORT \
-     -k ${PASSWORD:-$(hostname)} \
-     -m $METHOD \
-     -t $TIMEOUT \
-     -d $DNS_ADDRS \
-     -u \
-     --fast-open \
-     $ARGS
-
+    -s $SERVER_ADDR \
+    -p $SERVER_PORT \
+    -k ${PASSWORD:-$(hostname)} \
+    -m $METHOD \
+    -t $TIMEOUT \
+    -d $DNS_ADDRS \
+    -u \
+    --fast-open \
+    $ARGS
 # docker build . -t nediiii/shadowsocks-libev
+# docker run -d -p 8388:8388
